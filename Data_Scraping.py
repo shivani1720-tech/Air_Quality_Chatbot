@@ -52,7 +52,7 @@ async def fetch_data(session, year, month, day, hour, retries=3):
                 print(f"Retry {attempt+1}: Failed to fetch {year}-{month}-{day} {hour}:00 ({e})")
                 await asyncio.sleep(random.uniform(2, 5))  # Random delay before retry
 
-        print(f"❌ Final failure: {year}-{month}-{day} {hour}:00")  # Log final failure
+        print(f"Final failure: {year}-{month}-{day} {hour}:00")  # Log final failure
 async def main():
     """
     Main function to run all fetch requests asynchronously.
@@ -96,5 +96,19 @@ def convert_to_ampm(hour):
 df["Hour"] = df["Hour"].apply(convert_to_ampm)
 # Save the updated CSV with formatted time
 df.to_csv("air_quality_data_2012.csv", index=False)
+
+#MERGING THE DATA
+import pandas as pd
+# Load CSV
+csv_path = "/content/sample_data/Data/merged_air_quality_data_2012_2025.csv"
+df = pd.read_csv(csv_path)
+# Ensure "Day" column is integer
+df["Day"] = pd.to_numeric(df["Day"], errors="coerce")
+# Remove rows where "Day" is NaN (corrupted rows)
+df = df.dropna(subset=["Day"])
+# Save the cleaned CSV
+cleaned_path = "/content/sample_data/Data/merged_air_quality_data_2012_2025_cleaned.csv"
+df.to_csv(cleaned_path, index=False)
+print("Cleaned CSV saved successfully!")
 
 
